@@ -55,19 +55,12 @@ def solve(V, k, l, z_th=0.001, tolerance=1e-7, n_iter=[30, 30, 10, 30], comp_rat
     model.solve()
         
     wtx = iconv(model.W, model.V)
-    #sig_cells = sig_bool(model.W, sig_abs=sig_abs, sig_rel=sig_rel)
 
     wtx_corr = cp.zeros((model.k, model.k))
     wtx_shift = cp.zeros_like(wtx_corr)
 
-    #wtx_diff = wtx[:, l:-l, cp.newaxis] - wtx[:, cp.newaxis, l:-l]
-    #sigma = wtx_diff.std(axis=(1,2))[:, cp.newaxis, cp.newaxis]
-    #diff_bin = cp.zeros_like(wtx_diff)
-    #diff_bin[wtx_diff > 2 * sigma] = 1
-    #diff_bin[wtx_diff < -2 * sigma] = -1
     for yi in range(model.k):
         for xi in range(yi+1, model.k):
-            #corr, shift = calc_wtx_corr(diff_bin[yi], diff_bin[xi], l)
             corr, shift = calc_wtx_corr(wtx[yi], wtx[xi], l)
             wtx_corr[yi, xi] = corr
             wtx_corr[xi, yi] = corr
@@ -90,17 +83,11 @@ def solve(V, k, l, z_th=0.001, tolerance=1e-7, n_iter=[30, 30, 10, 30], comp_rat
         wtx_corr_new = cp.zeros(model.k-1)
         wtx_shift_new = cp.zeros(model.k-1)
 
-        #wtx_diff_new = wtx_new[l:-l, cp.newaxis] - wtx_new[cp.newaxis, l:-l]
-        #sigma_new = wtx_diff_new.std()
-        #diff_bin_new = cp.zeros_like(wtx_diff_new)
-        #diff_bin_new[wtx_diff_new > 2 * sigma_new] = 1
-        #diff_bin_new[wtx_diff_new < -2 * sigma_new] = -1
         count = 0
         for ii in range(model.k):
             if ii == j:
                 continue
             elif ii != i:
-                #corr, shift = calc_wtx_corr(diff_bin_new, diff_bin[ii], model.l)
                 corr, shift = calc_wtx_corr(wtx_new, wtx[ii], l)
                 wtx_corr_new[count] = corr
                 wtx_shift_new[count] = shift
@@ -112,9 +99,6 @@ def solve(V, k, l, z_th=0.001, tolerance=1e-7, n_iter=[30, 30, 10, 30], comp_rat
     
         wtx = cp.vstack((wtx[:j], wtx[j+1:]))
         wtx[i] = wtx_new
-
-        #diff_bin = cp.concatenate((diff_bin[:j], diff_bin[j+1:]), axis=0)
-        #diff_bin[i] = diff_bin_new
     
         tmp = cp.vstack((wtx_corr[:j], wtx_corr[j+1:]))
         wtx_corr = cp.hstack((tmp[:, :j], tmp[:, j+1:]))
@@ -126,22 +110,12 @@ def solve(V, k, l, z_th=0.001, tolerance=1e-7, n_iter=[30, 30, 10, 30], comp_rat
         wtx_shift[i] = wtx_shift_new
         wtx_shift[:, i] = wtx_shift_new
     
-        #sig_cells[:, i] = sig_cells[:, i] | sig_cells[:, j]
-        #sig_cells = cp.hstack((sig_cells[:, :j], sig_cells[:, j+1:]))
-    
         model.k -= 1
-    
-    #remove_nonsig(model, sig_cells, n_sig=n_sig)
-    #model.Wmax = model.W.max(axis=2).max(axis=0)
     
     model.max_iter = n_iter[2]
     model.cost = []
     model._scale_WH()
     model.solve()
-
-    #sig_cells = sig_bool(model.W, sig_abs=sig_abs, sig_rel=sig_rel)
-    #remove_nonsig(model, sig_cells, n_sig=n_sig)
-    #model.Wmax = model.W.max(axis=2).max(axis=0)
     
     h2 = model.H.copy()
     w2 = model.W.copy()

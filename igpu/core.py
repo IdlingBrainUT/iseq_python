@@ -59,15 +59,8 @@ class iSeq:
                 else:
                     self.W[:, ki, :] /= (~index[:, ki, :] * self.W[:, ki, :]).sum() / (1 - s * self.Wlim)
                     self.W[:, ki, :][index[:, ki, :]] = self.Wlim
-        #w_max = self.W.max(axis=2).max(axis=0)
-        #lim = self.Vmax / w_max * self.Hlim
-        #for ki in range(self.k):
-        #    self.H[ki][self.H[ki] > lim[ki]] = lim[ki]
         lim = self.Vmax / self.Wlim * self.Hlim
         self.H[self.H > lim] = lim
-        # for ki in range(self.k):
-        #     lim = self.H[ki].mean() + self.H[ki].std() * 3
-        #     self.H[ki][self.H[ki] > lim] = lim
 
     def _scale_H(self):
         lim = self.Vmax / self.Wlim * self.Hlim

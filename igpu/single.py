@@ -105,10 +105,6 @@ class iSeqSingle:
                 else:
                     self.Wact[:, ki] /= (~index[:, ki] * self.Wact[:, ki]).sum() / (1 - s_lim * self.Wlim)
                     self.Wact[:, ki][index[:, ki]] = self.Wlim
-        #w_max = self.Wact.max(axis=0)
-        #lim = self.Vmax / w_max * self.Hlim
-        #for ki in range(self.k):
-        #    self.H[ki][self.H[ki] > lim[ki]] = lim[ki]
         lim = self.Vmax / self.Wlim * self.Hlim
         self.H[self.H > lim] = lim
 

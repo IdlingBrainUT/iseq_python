@@ -23,13 +23,6 @@ def open_csv(filepath, n_null=100, random_seed=None):
 
     return y
 
-"""
-def open_csv_nonull(filepath, n_null=100):
-    x = pd.read_csv(filepath, header=None).values[:, :-n_null]
-    x /= x.sum(axis=0)
-    x[x == 0] = x[x > 0].min()
-    return x
-"""
 
 def open_csv_nonull(filepath):
     x = pd.read_csv(filepath, header=None).values
